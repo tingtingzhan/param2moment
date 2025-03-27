@@ -24,11 +24,7 @@
 #' @references
 #' Raw moments of skew-\eqn{t}: \url{https://arxiv.org/abs/0911.2342}
 #' 
-#' @examples
-#' xi = 2; omega = 1.3; alpha = 3; nu = 6
-#' curve(sn::dst(x, xi = xi, omega = omega, alpha = alpha, nu = nu), from = 0, to = 6)
-#' moment_st(xi, omega, alpha, nu)
-#' 
+#' @keywords internal
 #' @export
 moment_st <- function(xi = 0, omega = 1, alpha = 0, nu = Inf) {
   do.call(what = new, args = c(list(Class = 'moment', location = xi, scale = omega), moment_st_(alpha = alpha, nu = nu)))
@@ -80,9 +76,7 @@ moment_st_ <- function(alpha = 0, nu = Inf) { # xi = 0, omega = 1,
 #' Function [moment2st()] returns a \link[base]{length}-4 \link[base]{numeric} \link[base]{vector} 
 #' \eqn{(\xi, \omega, \alpha, \nu)}.
 #' 
-#' @examples
-#' moment2st(skewness = .2, kurtosis = .3)
-#' 
+#' @keywords internal
 #' @name moment2st
 #' @importFrom stats optim
 #' @export
@@ -109,9 +103,6 @@ moment2st <- function(mean = 0, sd = 1, skewness, kurtosis) {
 #' @returns
 #' Function [moment2t_demo()] returns a \link[base]{length}-2 
 #' \link[base]{numeric} \link[base]{vector} \eqn{(\omega, \nu)}.
-#' 
-#' @examples
-#' moment2t_demo(kurtosis = .3)
 #' 
 #' @importFrom stats optim
 #' @export

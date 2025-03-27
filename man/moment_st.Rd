@@ -26,12 +26,7 @@ Function \code{\link[=moment_st]{moment_st()}} returns a \linkS4class{moment} ob
 Moments of skew-\eqn{t} distribution, parameter nomenclature follows
 \link[sn]{dst} function.
 }
-\examples{
-xi = 2; omega = 1.3; alpha = 3; nu = 6
-curve(sn::dst(x, xi = xi, omega = omega, alpha = alpha, nu = nu), from = 0, to = 6)
-moment_st(xi, omega, alpha, nu)
-
-}
 \references{
 Raw moments of skew-\eqn{t}: \url{https://arxiv.org/abs/0911.2342}
 }
+\keyword{internal}

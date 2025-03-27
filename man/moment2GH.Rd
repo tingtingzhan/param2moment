@@ -53,11 +53,4 @@ An educational and demonstration function \code{\link[=moment2GH_g_demo]{moment2
 from user-specified \eqn{\mu}, \eqn{\sigma} and skewness.
 For this distribution, the elongation parameter \eqn{h=0}.
 }
-\examples{
-moment2GH(skewness = .2, kurtosis = .3)
-
-moment2GH_h_demo(kurtosis = .3)
-
-moment2GH_g_demo(skewness = .2)
-
-}
+\keyword{internal}

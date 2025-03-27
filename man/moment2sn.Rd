@@ -27,7 +27,4 @@ of skew-normal distribution,
 from user-specified mean \eqn{\mu} (default 0), standard deviation \eqn{\sigma} (default 1) and
 skewness.
 }
-\examples{
-moment2sn(skewness = .3)
-
-}
+\keyword{internal}

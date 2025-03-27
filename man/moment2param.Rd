@@ -27,10 +27,4 @@ Function \code{\link[=moment2param]{moment2param()}} returns a \link[base]{list}
 \description{
 Converts multiple sets of moments to multiple sets of distribution parameters.
 }
-\examples{
-skw = c(.2, .5, .8)
-krt = c(.5, 1, 1.5)
-moment2param(distname = 'GH', skewness = skw, kurtosis = krt)
-moment2param(distname = 'st', skewness = skw, kurtosis = krt)
-
-}
+\keyword{internal}

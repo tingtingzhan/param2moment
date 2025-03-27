@@ -41,9 +41,4 @@ from user-specified \eqn{\sigma} and kurtosis.
 This is a non-skewed distribution, thus
 the location parameter \eqn{\xi=\mu=0}, and the slant parameter \eqn{\alpha=0}.
 }
-\examples{
-moment2st(skewness = .2, kurtosis = .3)
-
-moment2t_demo(kurtosis = .3)
-
-}
+\keyword{internal}

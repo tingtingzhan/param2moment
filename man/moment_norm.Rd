@@ -20,7 +20,4 @@ Function \code{\link[=moment_norm]{moment_norm()}} returns a \linkS4class{moment
 Moments of \href{https://en.wikipedia.org/wiki/Normal_distribution}{normal distribution}, parameter nomenclature follows
 \link[stats]{dnorm} function.
 }
-\examples{
-moment_norm(mean = 1.2, sd = .7)
-
-}
+\keyword{internal}

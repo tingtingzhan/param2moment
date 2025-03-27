@@ -23,9 +23,4 @@ Function \code{\link[=moment_sn]{moment_sn()}} returns a \linkS4class{moment} ob
 Moments of \href{https://en.wikipedia.org/wiki/Skew_normal_distribution}{skew-normal distribution}, parameter nomenclature follows
 \link[sn]{dsn} function.
 }
-\examples{
-xi = 2; omega = 1.3; alpha = 3
-moment_sn(xi, omega, alpha)
-curve(sn::dsn(x, xi = 2, omega = 1.3, alpha = 3), from = 0, to = 6)
-
-}
+\keyword{internal}

@@ -25,13 +25,7 @@ Function \code{\link[=moment_GH]{moment_GH()}} returns a \linkS4class{moment} ob
 \description{
 Moments of Tukey \eqn{g}-&-\eqn{h} distribution.
 }
-\examples{
-A = 3; B = 1.5; g = .7; h = .01
-moment_GH(A = A, B = B, g = 0, h = h)
-moment_GH(A = A, B = B, g = g, h = 0)
-moment_GH(A = A, B = B, g = g, h = h)
-
-}
 \references{
 Raw moments of Tukey \eqn{g}-&-\eqn{h} distribution: \doi{10.1002/9781118150702.ch11}
 }
+\keyword{internal}

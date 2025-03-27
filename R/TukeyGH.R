@@ -25,12 +25,7 @@
 #' @references 
 #' Raw moments of Tukey \eqn{g}-&-\eqn{h} distribution: \doi{10.1002/9781118150702.ch11}
 #' 
-#' @examples
-#' A = 3; B = 1.5; g = .7; h = .01
-#' moment_GH(A = A, B = B, g = 0, h = h)
-#' moment_GH(A = A, B = B, g = g, h = 0)
-#' moment_GH(A = A, B = B, g = g, h = h)
-#' 
+#' @keywords internal
 #' @importFrom methods new
 #' @export
 moment_GH <- function(A = 0, B = 1, g = 0, h = 0) {
@@ -95,9 +90,7 @@ moment_GH_ <- function(g = 0, h = 0) {
 #' Function [moment2GH()] returns a \link[base]{length}-4 
 #' \link[base]{numeric} \link[base]{vector} \eqn{(A, B, g, h)}.
 #' 
-#' @examples
-#' moment2GH(skewness = .2, kurtosis = .3)
-#' 
+#' @keywords internal
 #' @name moment2GH
 #' @importFrom stats optim
 #' @export
@@ -122,9 +115,7 @@ moment2GH <- function(mean = 0, sd = 1, skewness, kurtosis) {
 #' Function [moment2GH_h_demo()] returns a \link[base]{length}-2 
 #' \link[base]{numeric} \link[base]{vector} \eqn{(B, h)}.
 #' 
-#' @examples
-#' moment2GH_h_demo(kurtosis = .3)
-#' 
+#' @keywords internal
 #' @importFrom stats optim
 #' @export
 moment2GH_h_demo <- function(sd = 1, kurtosis) {
@@ -146,9 +137,7 @@ moment2GH_h_demo <- function(sd = 1, kurtosis) {
 #' Function [moment2GH_g_demo()] returns a \link[base]{length}-3 
 #' \link[base]{numeric} \link[base]{vector} \eqn{(A, B, g)}.
 #' 
-#' @examples
-#' moment2GH_g_demo(skewness = .2)
-#' 
+#' @keywords internal
 #' @importFrom stats optim
 #' @export
 moment2GH_g_demo <- function(mean = 0, sd = 1, skewness) {

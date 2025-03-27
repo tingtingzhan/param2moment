@@ -18,5 +18,9 @@ Language: en-US
 Roxygen: list(markdown = TRUE)
 Depends: R (>= 4.4.0)
 Imports: methods
-Suggests: sn
+Suggests: 
+    knitr,
+    rmarkdown,
+    sn
 RoxygenNote: 7.3.2
+VignetteBuilder: knitr

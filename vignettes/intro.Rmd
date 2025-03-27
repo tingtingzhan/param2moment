@@ -1,0 +1,86 @@
+---
+title: "Distribution Parameters to Moments"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Distribution Parameters to Moments}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+library(knitr)
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup}
+library(param2moment)
+```
+
+
+
+```{r}
+A = 3; B = 1.5; g = .7; h = .01
+moment_GH(A = A, B = B, g = 0, h = h)
+moment_GH(A = A, B = B, g = g, h = 0)
+moment_GH(A = A, B = B, g = g, h = h)
+```
+
+```{r}
+moment2GH(skewness = .2, kurtosis = .3)
+```
+
+
+```{r}
+moment2GH_h_demo(kurtosis = .3)
+```
+
+
+```{r}
+moment2GH_g_demo(skewness = .2)
+```
+
+
+```{r}
+skw = c(.2, .5, .8)
+krt = c(.5, 1, 1.5)
+moment2param(distname = 'GH', skewness = skw, kurtosis = krt)
+moment2param(distname = 'st', skewness = skw, kurtosis = krt)
+```
+
+
+```{r}
+moment_norm(mean = 1.2, sd = .7)
+```
+
+```{r}
+xi = 2; omega = 1.3; alpha = 3
+moment_sn(xi, omega, alpha)
+curve(sn::dsn(x, xi = 2, omega = 1.3, alpha = 3), from = 0, to = 6)
+```
+
+
+```{r}
+moment2sn(skewness = .3)
+```
+
+
+```{r}
+xi = 2; omega = 1.3; alpha = 3; nu = 6
+curve(sn::dst(x, xi = xi, omega = omega, alpha = alpha, nu = nu), from = 0, to = 6)
+moment_st(xi, omega, alpha, nu)
+```
+
+
+```{r}
+moment2st(skewness = .2, kurtosis = .3)
+```
+
+
+```{r}
+moment2t_demo(kurtosis = .3)
+```
+

@@ -21,12 +21,7 @@
 #' @returns
 #' Function [moment2param()] returns a \link[base]{list} of \link[base]{numeric} \link[base]{vector}s.
 #' 
-#' @examples
-#' skw = c(.2, .5, .8)
-#' krt = c(.5, 1, 1.5)
-#' moment2param(distname = 'GH', skewness = skw, kurtosis = krt)
-#' moment2param(distname = 'st', skewness = skw, kurtosis = krt)
-#' 
+#' @keywords internal
 #' @export
 moment2param <- function(distname, FUN = paste0('moment2', distname), ...) {
   .mapply(
