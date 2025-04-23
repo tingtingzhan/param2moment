@@ -47,7 +47,7 @@ moment_GH_ <- function(g = 0, h = 0) {
   if (any(!g0)) {
     # {r}aw moment E(Y^n), when `g != 0`
     r_g <- function(n) { # equation (47), page 503
-      tmp <- lapply(0:n, FUN = function(i) {
+      tmp <- lapply(0:n, FUN = \(i) {
         (-1)^i * choose(n,i) * exp((n-i)^2 * g^2 / 2 / (1-n*h))
       })
       suppressWarnings(Reduce(f = `+`, tmp) / g^n / sqrt(1-n*h)) # warnings for `h > 1/n`
