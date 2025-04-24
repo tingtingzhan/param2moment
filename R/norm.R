@@ -18,6 +18,7 @@
 #' @keywords internal
 #' @export
 moment_norm <- function(mean = 0, sd = 1) {
-  do.call(what = new, args = c(list(Class = 'moment', location = mean, scale = sd), moment_int(distname = 'norm', mu = 0, raw2 = 1, raw3 = 0, raw4 = 3)))
+  c(list(Class = 'moment', location = mean, scale = sd), moment_int(distname = 'norm', mu = 0, raw2 = 1, raw3 = 0, raw4 = 3)) |>
+    do.call(what = new)
 }
 

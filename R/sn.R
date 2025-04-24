@@ -22,7 +22,8 @@
 #' @importFrom methods new
 #' @export
 moment_sn <- function(xi = 0, omega = 1, alpha = 0) {
-  do.call(what = new, args = c(list(Class = 'moment', location = xi, scale = omega), moment_sn_(alpha = alpha)))
+  c(list(Class = 'moment', location = xi, scale = omega), moment_sn_(alpha = alpha)) |>
+    do.call(what = new)
 }
 
 moment_sn_ <- function(alpha = 0) {

@@ -29,7 +29,8 @@
 #' @importFrom methods new
 #' @export
 moment_GH <- function(A = 0, B = 1, g = 0, h = 0) {
-  do.call(what = new, args = c(list(Class = 'moment', location = A, scale = B), moment_GH_(g = g, h = h)))
+  c(list(Class = 'moment', location = A, scale = B), moment_GH_(g = g, h = h)) |>
+    do.call(what = new)
 }
 
 moment_GH_ <- function(g = 0, h = 0) {

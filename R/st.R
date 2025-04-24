@@ -27,8 +27,11 @@
 #' @keywords internal
 #' @export
 moment_st <- function(xi = 0, omega = 1, alpha = 0, nu = Inf) {
-  do.call(what = new, args = c(list(Class = 'moment', location = xi, scale = omega), moment_st_(alpha = alpha, nu = nu)))
+  c(list(Class = 'moment', location = xi, scale = omega), moment_st_(alpha = alpha, nu = nu)) |>
+    do.call(what = new)
 }
+
+
 moment_st_ <- function(alpha = 0, nu = Inf) { # xi = 0, omega = 1, 
   delta <- alpha / sqrt(1 + alpha^2)
   b <- sqrt(nu/pi) * gamma(nu/2 - 1/2) / gamma(nu/2) # equation (29); https://arxiv.org/pdf/0911.2342.pdf
