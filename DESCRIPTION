@@ -16,11 +16,12 @@ Authors@R: c(person(given = "Tingting", family = "Zhan", role =
        = c(ORCID = '0000-0001-9971-4844')))
 Language: en-US
 Roxygen: list(markdown = TRUE)
-Depends: R (>= 4.4.0)
+Depends: R (>= 4.4.0), ggplot2, geomtextpath
 Imports: methods
 Suggests: 
     knitr,
     rmarkdown,
-    sn
+    sn,
+    TukeyGH77
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr

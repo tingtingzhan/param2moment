@@ -18,6 +18,8 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 
 ```{r setup}
 library(param2moment)
+library(TukeyGH77)
+library(sn)
 ```
 
 
@@ -47,9 +49,18 @@ moment2GH_g_demo(skewness = .2)
 ```{r}
 skw = c(.2, .5, .8)
 krt = c(.5, 1, 1.5)
-moment2param(distname = 'GH', skewness = skw, kurtosis = krt)
-moment2param(distname = 'st', skewness = skw, kurtosis = krt)
 ```
+
+```{r}
+moment2param(distname = 'GH', skewness = skw, kurtosis = krt, hjust = .35) +
+  xlim(-3, 4)
+```
+
+```{r}
+moment2param(distname = 'st', skewness = skw, kurtosis = krt, hjust = .35) +
+  xlim(-3, 4)
+```
+
 
 
 ```{r}

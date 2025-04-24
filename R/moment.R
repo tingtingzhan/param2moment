@@ -139,10 +139,10 @@ kurtosis_moment <- function(x) x@standardized4 - 3
 #' @importFrom methods show signature
 #' @export
 setMethod(f = show, signature = signature(object = 'moment'), definition = function(object) {
-  cat(sprintf('Distribution: %s\n', object@distname))
-  cat(sprintf('Mean: %s\n', paste0(sprintf(fmt = '%.3f', mean_moment(object)), collapse = ', ')))
-  cat(sprintf('Standard Deviation: %s\n', paste0(sprintf(fmt = '%.3f', sd_moment(object)), collapse = ', ')))
-  cat(sprintf('Skewness: %s\n', paste0(sprintf(fmt = '%.3f', skewness_moment(object)), collapse = ', ')))
-  cat(sprintf('Kurtosis: %s\n', paste0(sprintf(fmt = '%.3f', kurtosis_moment(object)), collapse = ', ')))
+  object@distname |> sprintf(fmt = 'Distribution: %s\n') |> cat()
+  object |> mean_moment() |> sprintf(fmt = '%.3f') |> paste0(collapse = ', ') |> sprintf(fmt = 'Mean: %s\n') |> cat()
+  object |> sd_moment() |> sprintf(fmt = '%.3f') |> paste0(collapse = ', ') |> sprintf(fmt = 'Standard Deviation: %s\n') |> cat()
+  object |> skewness_moment() |> sprintf(fmt = '%.3f') |> paste0(collapse = ', ') |> sprintf(fmt = 'Skewness: %s\n') |> cat()
+  object |> kurtosis_moment() |> sprintf(fmt = '%.3f') |> paste0(collapse = ', ') |> sprintf(fmt = 'Kurtosis: %s\n') |> cat()
 })
 
