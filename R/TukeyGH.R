@@ -26,14 +26,54 @@
 #' Raw moments of Tukey \eqn{g}-&-\eqn{h} distribution: \doi{10.1002/9781118150702.ch11}
 #' 
 #' @keywords internal
-#' @importFrom methods new
 #' @export
 moment_GH <- function(A = 0, B = 1, g = 0, h = 0) {
-  c(list(Class = 'moment', location = A, scale = B), moment_GH_(g = g, h = h)) |>
-    do.call(what = new)
+  
+  list(g = g, h = h) |>
+    .mapply(FUN = moment_GH_, MoreArgs = NULL) |>
+    c(list(FUN = c, SIMPLIFY = FALSE)) |>
+    do.call(what = mapply) |>
+    c(list(Class = 'moment', location = A, scale = B)) |>
+    do.call(what = 'new')
+  
 }
 
-moment_GH_ <- function(g = 0, h = 0) {
+
+moment_GH_ <- function(g, h) {
+  
+  if (g == 0) {
+    return(list(
+      raw1 = 0, 
+      raw2 = 1 / (1-2*h) ^ (3/2), # (45a), page 502
+      raw3 = 0,
+      raw4 = 3 / (1-4*h) ^ (5/2) # (45b), page 502
+    ))
+  }
+  
+  r_g <- \(n) { # equation (47), page 503
+    if (h > 1/n) return(NaN)
+    tmp <- (0:n) |>
+      vapply(FUN = \(i) {
+        (-1)^i * choose(n,i) * exp((n-i)^2 * g^2 / 2 / (1-n*h))
+      }, FUN.VALUE = NA_real_) |>
+      sum()
+    tmp / g^n / sqrt(1-n*h)
+  }
+  
+  return(list(
+    raw1 = r_g(1L),
+    raw2 = r_g(2L),
+    raw3 = r_g(3L),
+    raw4 = r_g(4L)
+  ))
+  
+}
+
+
+
+
+
+moment_GH_OLD <- function(g = 0, h = 0) {
   tmp <- data.frame(g, h) # recycling
   g <- tmp[[1L]]
   h <- tmp[[2L]]
@@ -41,26 +81,26 @@ moment_GH_ <- function(g = 0, h = 0) {
   g0 <- (g == 0)
   
   # 1st-4th raw moment E(Y^n), when `g = 0`
-  mu <- r3 <- rep(0, times = length(g))
+  r1 <- r3 <- rep(0, times = length(g))
   r2 <- 1 / (1-2*h) ^ (3/2) # (45a), page 502
   r4 <- 3 / (1-4*h) ^ (5/2) # (45b), page 502
   
   if (any(!g0)) {
     # {r}aw moment E(Y^n), when `g != 0`
-    r_g <- function(n) { # equation (47), page 503
+    r_g <- \(n) { # equation (47), page 503
       tmp <- lapply(0:n, FUN = \(i) {
         (-1)^i * choose(n,i) * exp((n-i)^2 * g^2 / 2 / (1-n*h))
       })
       suppressWarnings(Reduce(f = `+`, tmp) / g^n / sqrt(1-n*h)) # warnings for `h > 1/n`
     }
     
-    mu[!g0] <- r_g(1L)[!g0]
+    r1[!g0] <- r_g(1L)[!g0]
     r2[!g0] <- r_g(2L)[!g0]
     r3[!g0] <- r_g(3L)[!g0]
     r4[!g0] <- r_g(4L)[!g0]
   }
   
-  moment_int(distname = 'GH', mu = mu, raw2 = r2, raw3 = r3, raw4 = r4)
+  moment_init(distname = 'GH', raw1 = r1, raw2 = r2, raw3 = r3, raw4 = r4)
   
 }
 
@@ -95,58 +135,55 @@ moment_GH_ <- function(g = 0, h = 0) {
 #' @name moment2GH
 #' @importFrom stats optim
 #' @export
-moment2GH <- function(mean = 0, sd = 1, skewness, kurtosis) {
-  optim(par = c(A = 0, B = 1, g = 0, h = 0), fn = function(x) {
-    mm <- moment_GH_(g = x[3L], h = x[4L])
-    crossprod(c(mean_moment_(mm, location = x[1L], scale = x[2L]), sd_moment_(mm, scale = x[2L]), skewness_moment_(mm), kurtosis_moment_(mm)) - c(mean, sd, skewness, kurtosis))
-  })$par
+moment2GH <- function(
+    mean = 0, sd = 1, skewness, kurtosis,
+    g,
+    h,
+    ...
+) {
+  
+  g0 <- !missing(g) && identical(g, 0)
+  h0 <- !missing(h) && identical(h, 0)
+  
+  if (g0 & h0) stop('just normal distribution')
+  
+  opt <- if (g0) {
+    optim(par = c(A = 0, B = 1, h = 0), fn = function(x) {
+      m <- moment_GH_(g = 0, h = x[3L]) |>
+        do.call(what = moment_init)
+      z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
+      z2 <- sd_moment_(m, scale = x[2L])
+      z4 <- kurtosis_moment_(m)
+      crossprod(c(z1, z2, z4) - c(mean, sd, kurtosis))
+    })
+  } else if (h0) {
+    optim(par = c(A = 0, B = 1, g = 0), fn = function(x) {
+      m <- moment_GH_(g = x[3L], h = 0) |>
+        do.call(what = moment_init)
+      z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
+      z2 <- sd_moment_(m, scale = x[2L])
+      z3 <- skewness_moment_(m)
+      z4 <- kurtosis_moment_(m)
+      crossprod(c(z1, z2, z3) - c(mean, sd, skewness))
+    })
+  } else {
+    optim(par = c(A = 0, B = 1, g = 0, h = 0), fn = function(x) {
+      m <- moment_GH_(g = x[3L], h = x[4L]) |>
+        do.call(what = moment_init)
+      z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
+      z2 <- sd_moment_(m, scale = x[2L])
+      z3 <- skewness_moment_(m)
+      z4 <- kurtosis_moment_(m)
+      crossprod(c(z1, z2, z3, z4) - c(mean, sd, skewness, kurtosis))
+    })
+  }
+  
+  return(opt$par)
+  
 }
 
 
-#' @rdname moment2GH
-#' 
-#' @details
-#' An educational and demonstration function [moment2GH_h_demo()] solves 
-#' \eqn{(B, h)} parameters of Tukey \eqn{h}-distribution,
-#' from user-specified \eqn{\sigma} and kurtosis.
-#' This is a non-skewed distribution, thus 
-#' the location parameter \eqn{A=\mu=0}, and the skewness parameter \eqn{g=0}.
-#' 
-#' @returns
-#' Function [moment2GH_h_demo()] returns a \link[base]{length}-2 
-#' \link[base]{numeric} \link[base]{vector} \eqn{(B, h)}.
-#' 
-#' @keywords internal
-#' @importFrom stats optim
-#' @export
-moment2GH_h_demo <- function(sd = 1, kurtosis) {
-  optim(par = c(B = 1, h = 0), fn = function(x) {
-    mm <- moment_GH_(g = 0, h = x[2L])
-    crossprod(c(sd_moment_(mm, scale = x[1L]), kurtosis_moment_(mm)) - c(sd, kurtosis))
-  })$par
-}
 
-#' @rdname moment2GH
-#' 
-#' @details
-#' An educational and demonstration function [moment2GH_g_demo()] solves  
-#' \eqn{(A, B, g)} parameters of Tukey \eqn{g}-distribution,
-#' from user-specified \eqn{\mu}, \eqn{\sigma} and skewness.
-#' For this distribution, the elongation parameter \eqn{h=0}.
-#' 
-#' @returns
-#' Function [moment2GH_g_demo()] returns a \link[base]{length}-3 
-#' \link[base]{numeric} \link[base]{vector} \eqn{(A, B, g)}.
-#' 
-#' @keywords internal
-#' @importFrom stats optim
-#' @export
-moment2GH_g_demo <- function(mean = 0, sd = 1, skewness) {
-  optim(par = c(A = 0, B = 1, g = 0), fn = function(x) {
-    mm <- moment_GH_(g = x[3L], h = 0)
-    crossprod(c(mean_moment_(mm, location = x[1L], scale = x[2L]), sd_moment_(mm, scale = x[2L]), skewness_moment_(mm)) - c(mean, sd, skewness))
-  })$par
-}
 
 
 

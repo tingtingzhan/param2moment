@@ -1,0 +1,316 @@
+---
+title: "param2moment"
+author: Tingting Zhan
+format: 
+  html:
+    page-layout: full
+    html-math-method: katex
+toc: true
+toc-location: left
+toc-depth: 4
+toc-title: ''
+editor: visual
+vignette: >
+  %\VignetteIndexEntry{intro}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+This vignette of package **`param2moment`** ([CRAN](https://CRAN.R-project.org/package=param2moment), [Github](https://github.com/tingtingzhan/param2moment)) documents ...
+
+## Prerequisite
+
+New features are first implemented on [Github](https://github.com/tingtingzhan/param2moment).
+
+```{r}
+#| warning: false
+#| eval: false
+remotes::install_github('tingtingzhan/TukeyGH77')
+remotes::install_github('tingtingzhan/param2moment')
+```
+
+And eventually make their way to [`CRAN`](https://CRAN.R-project.org/package=param2moment).
+
+```{r}
+#| warning: false
+#| eval: false
+utils::install.packages('TukeyGH77')
+utils::install.packages('param2moment')
+```
+
+## Note to Users
+
+Examples in this vignette require that the `search` path has
+
+```{r}
+#| message: false
+library(param2moment)
+library(TukeyGH77)
+library(sn)
+library(latex2exp)
+```
+
+```{r}
+#| echo: false
+library(knitr) # for tables in this vignette
+op = par(no.readonly = TRUE)
+#options(mc.cores = 1L) # for CRAN submission
+library(ggplot2)
+theme_bw() |>
+  theme_set()
+```
+
+## Terms and Abbreviations
+
+```{r}
+#| echo: false
+#| results: asis
+c(
+  '[|>](https://search.r-project.org/R/refmans/base/html/pipeOp.html)', 'Forward pipe operator introduced in `R` 4.1.0', 
+  '[`all.equal.numeric`](https://search.r-project.org/R/refmans/base/html/all.equal.html)', 'Test of near equality',
+  '`CRAN`, `R`', '[The Comprehensive R Archive Network](https://cran.r-project.org)',
+  '[`curve`](https://search.r-project.org/R/refmans/graphics/html/curve.html)', 'Function plots',
+  '[`.lm.fit`](https://search.r-project.org/R/refmans/stats/html/lmfit.html)', 'Least squares regression, the internal workhorse',
+  '[`mad`](https://search.r-project.org/R/refmans/stats/html/mad.html)', 'Median Absolute Deviation',
+  '[`median`](https://search.r-project.org/R/refmans/stats/html/median.html)', 'Median',
+  '[`dnorm`, `pnorm`, `qnorm`, `rnorm`](https://search.r-project.org/R/refmans/stats/html/Normal.html)', 'Normal Distribution',
+  '[`optim`](https://search.r-project.org/R/refmans/stats/html/optim.html), [`optimize`](https://search.r-project.org/R/refmans/stats/html/optimize.html)', 'Optimization',
+  '[`sd`](https://search.r-project.org/R/refmans/stats/html/sd.html)', 'Standard Deviation',
+  '[`search`](https://search.r-project.org/R/refmans/base/html/search.html)', 'Search path',
+  '[`seed`](https://search.r-project.org/R/refmans/base/html/Random.html)', 'Random number generation seed',
+  '[`vuniroot`](https://search.r-project.org/CRAN/refmans/rstpm2/html/vuniroot.html)', 'Vectorised one-dimensional root-finding, in package [`rstpm2`](https://CRAN.R-project.org/package=rstpm2)'
+) |>
+  matrix(nrow = 2L, dimnames = list(c('Term / Abbreviation', 'Description'), NULL)) |>
+  t.default() |>
+  as.data.frame.matrix() |> 
+  kable() 
+```
+
+# Introduction
+
+# Moments
+
+For random variable $X$,
+
+## Raw Moments
+
+```{r}
+#| echo: false
+#| results: asis
+c(
+  '`@raw1`', '$\\mu = \\text{E}(X)$',
+  '`@raw2`', '$\\text{E}(X^2)$',
+  '`@raw3`', '$\\text{E}(X^3)$',
+  '`@raw4`', '$\\text{E}(X^4)$'
+) |>
+  matrix(nrow = 2L, dimnames = list(c('Slot', 'Raw Moment'), NULL)) |>
+  t.default() |>
+  as.data.frame.matrix() |> 
+  kable() 
+```
+
+## Central Moments
+
+According to [Binomial theorem](https://en.wikipedia.org/wiki/Binomial_theorem),
+
+```{r}
+#| echo: false
+#| results: asis
+c(
+  '', '$0 = \\text{E}(X-\\mu)$', '', '',
+  '`@central2`', '$\\sigma^2 = \\text{E}(X-\\mu)^2$', '$\\text{E}(X^2) - \\mu^2$', '$\\text{E}(X^2) - 2\\mu\\text{E}(X) + \\mu^2$',
+  '`@central3`', '$\\text{E}(X-\\mu)^3$', '$\\text{E}(X^3) - 3\\mu\\text{E}(X^2) + 2\\mu^3$', '$\\text{E}(X^3) - 3\\mu\\text{E}(X^2) + 3\\mu^2\\text{E}(X) - \\mu^3$',
+  '`@central4`', '$\\text{E}(X-\\mu)^4$', '$\\text{E}(X^4) - 4\\mu\\text{E}(X^3) + 6\\mu^2\\text{E}(X^2) - 3\\mu^4$', '$\\text{E}(X^4) - 4\\mu\\text{E}(X^3) + 6\\mu^2 \\text{E}(X^2) - 4\\mu^3\\text{E}(X) + \\mu^4$'
+) |>
+  matrix(nrow = 4L, dimnames = list(c('Slot', '[Central Moment](https://en.wikipedia.org/wiki/Central_moment)', 'Value', 'Derivation'), NULL)) |>
+  t.default() |>
+  as.data.frame.matrix() |> 
+  kable() 
+```
+
+## Standardized Moments
+
+```{r}
+#| echo: false
+#| results: asis
+c(
+  '', '$0 = \\text{E}(X-\\mu)/\\sigma$', '',
+  '', '$1 = \\text{E}(X-\\mu)^2/\\sigma^2$', '',
+  '`@standardized3`', '$\\text{E}(X-\\mu)^3/\\sigma^3$', '[skewness](https://en.wikipedia.org/wiki/Skewness)',
+  '`@standardized4`', '$\\text{E}(X-\\mu)^4/\\sigma^4$', '[kurtosis](https://en.wikipedia.org/wiki/Kurtosis)'
+) |>
+  matrix(nrow = 3L, dimnames = list(c('Slot', '[Standardized Moment](https://en.wikipedia.org/wiki/Standardized_moment)', 'Description'), NULL)) |>
+  t.default() |>
+  as.data.frame.matrix() |> 
+  kable() 
+```
+
+## Location-Scale Transformation
+
+For $Y = \text{location} + \text{scale} \cdot X$,
+
+$$
+\begin{cases}
+\mu_Y  & = \text{location} + \text{scale}\cdot \mu_X\\
+\sigma_Y & = \text{scale}\cdot \sigma_X \\
+\text{skewness}_Y & = \text{skewness}_X\\
+\text{kurtosis}_Y & = \text{kurtosis}_X
+\end{cases}
+$$
+
+# Conversion of Parameter and Moment
+
+## Normal Distribution
+
+```{r}
+moment_norm(mean = 1.2, sd = .7)
+```
+
+## [Skew-Normal](https://en.wikipedia.org/wiki/Skew_normal_distribution) Distribution
+
+```{r}
+moment_sn(xi = 2, omega = 1.3, alpha = 3)
+```
+
+```{r}
+moment2sn(skewness = .3)
+```
+
+
+## Skew-$t$ Distribution
+
+```{r}
+moment_st(xi = 2, omega = 1.3, alpha = 3, nu = 6)
+```
+
+```{r}
+moment2st(skewness = .2, kurtosis = .3)
+```
+
+
+```{r}
+moment2st(mean = 1, kurtosis = .3, alpha = 0)
+```
+
+
+
+## Tukey's $gh$ Distribution
+
+### Tukey's $g$-distribution
+
+```{r}
+moment_GH(A = 3, B = 1.5, g = 0, h = .05)
+```
+
+```{r}
+moment2GH(mean = 1, kurtosis = .3, g = 0)
+```
+
+
+### Tukey's $h$-distribution
+
+```{r}
+moment_GH(A = 3, B = 1.5, g = .7, h = 0)
+```
+
+
+```{r}
+moment2GH(skewness = .2, h = 0)
+```
+
+
+### Tukey's $g$-and-$h$ Distribution
+
+
+```{r}
+moment_GH(A = 3, B = 1.5, g = .7, h = .05)
+```
+
+
+```{r}
+moment2GH(skewness = .2, kurtosis = .3)
+```
+
+
+
+
+
+# Batch Visualization
+
+```{r}
+skw = c(.2, .5, .8)
+krt = c(.5, 1, 1.5)
+```
+
+## Kurtosis only
+
+@Student:08-$t$ vs. Tukey's $h$
+
+-   R function `sn::dst` [@R_sn]   [scale $\omega$, degree-of-freedom
+    $\nu$]{style="background-color:yellow;"}
+
+-   $\mu = 0$, $\sigma = 1$,
+    [Kurtosis]{style="font-weight:bold;background-color:yellow;"}=[.5]{style="color:red;font-weight:bold;"},
+    [1]{style="color:green;font-weight:bold;"}, or
+    [1.5]{style="color:blue;font-weight:bold;"}
+
+```{r}
+#| fig-height: 3
+#| fig-width: 10
+p1 = moment2param(distname = 'st', MoreArgs = list(alpha = 0), kurtosis = krt) + 
+  xlim(-1.5, 1.5) + labs(y = TeX('Student-$t$'))
+p2 = moment2param(distname = 'GH', MoreArgs = list(g = 0), kurtosis = krt) + 
+  xlim(-1.5, 1.5) + labs(y = TeX('Tukey\'s $h$'))
+p1 + p2
+```
+
+
+
+## Skewness only
+
+Skew-Normal vs. Tukey's $g$
+
+-   R function `sn::dsn`   [location $\xi$, scale $\omega$, slant
+    $\alpha$]{style="background-color:yellow;"}
+
+-   $\mu = 0$, $\sigma = 1$,
+    [Skewness]{style="font-weight:bold;background-color:yellow;"}=[.2]{style="color:red;font-weight:bold;"},
+    [.5]{style="color:green;font-weight:bold;"}, or
+    [.8]{style="color:blue;font-weight:bold;"}
+
+```{r}
+#| fig-height: 3
+#| fig-width: 10
+p1 = moment2param(dist = 'sn', skewness = skw, hjust = .42) + xlim(-2, 2.5) + labs(y = 'Skew-Normal')
+p2 = moment2param(dist = 'GH', MoreArgs = list(h = 0), skewness = skw, hjust = .42) + 
+  xlim(-2, 2.5) + labs(y = TeX('Tukey\'s $g$'))
+p1 + p2
+```
+
+## Skewness and Kurtosis
+
+Skew-$t$ vs. Tukey's $g$-&-$h$
+
+-   R function `sn::dst`   [location $\xi$, scale $\omega$, slant
+    $\alpha$, degree-of-freedom $\nu$]{style="background-color:yellow;"}
+
+-   $\mu = 0$, $\sigma = 1$, [(Skewness,
+    Kurtosis)]{style="font-weight:bold;background-color:yellow;"}=[(.2,.5)]{style="color:red;font-weight:bold;"},
+    [(.5,1)]{style="color:green;font-weight:bold;"}, or
+    [(.8,1.5)]{style="color:blue;font-weight:bold;"}
+
+```{r}
+#| fig-height: 3
+#| fig-width: 10
+p1 = moment2param(distname = 'st', skewness = skw, kurtosis = krt, hjust = .35) +
+  xlim(-2, 2.5) + labs(y = TeX('Skew-$t$'))
+p2 = moment2param(distname = 'GH', skewness = skw, kurtosis = krt, hjust = .35) +
+  xlim(-2, 2.5) + labs(y = TeX('Tukey\'s $g$-&-$h$'))
+p1 + p2
+```
+
+
+
+

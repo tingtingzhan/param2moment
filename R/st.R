@@ -2,21 +2,9 @@
 
 #' @title Moments of Skew-\eqn{t} Distribution
 #' 
-#' @description
-#' Moments of skew-\eqn{t} distribution, parameter nomenclature follows
-#' \link[sn]{dst} function.
-#' 
-#' @param xi \link[base]{numeric} scalar or \link[base]{vector}, 
-#' location parameter \eqn{\xi}
-#' 
-#' @param omega \link[base]{numeric} scalar or \link[base]{vector}, 
-#' scale parameter \eqn{\omega}
-#' 
-#' @param alpha \link[base]{numeric} scalar or \link[base]{vector}, 
-#' slant parameter \eqn{\alpha}
-#' 
-#' @param nu \link[base]{numeric} scalar or \link[base]{vector}, 
-#' degree of freedom \eqn{\nu}
+#' @param xi,omega,alpha,nu \link[base]{numeric} scalars or \link[base]{vector}s, 
+#' location \eqn{\xi}, scale \eqn{\omega}, slant \eqn{\alpha} and degree of freedom \eqn{\nu}
+#' of function \link[sn]{dst}.
 #' 
 #' @returns
 #' Function [moment_st()] returns a \linkS4class{moment} object.
@@ -27,31 +15,22 @@
 #' @keywords internal
 #' @export
 moment_st <- function(xi = 0, omega = 1, alpha = 0, nu = Inf) {
-  c(list(Class = 'moment', location = xi, scale = omega), moment_st_(alpha = alpha, nu = nu)) |>
-    do.call(what = new)
-}
-
-
-moment_st_ <- function(alpha = 0, nu = Inf) { # xi = 0, omega = 1, 
   delta <- alpha / sqrt(1 + alpha^2)
   b <- sqrt(nu/pi) * gamma(nu/2 - 1/2) / gamma(nu/2) # equation (29); https://arxiv.org/pdf/0911.2342.pdf
-  mu <- b * delta
-  moment_int(
-    distname = 'st', 
-    mu = mu,
-    raw2 = nu/(nu-2),
-    raw3 = mu * (3-delta^2) * nu/(nu-3),
-    raw4 = 3*nu^2/(nu-2)/(nu-4)
-  )
+  r1 <- b * delta
+  new(Class = 'moment', 
+      distname = 'st', 
+      location = xi, scale = omega,
+      raw1 = r1,
+      raw2 = nu/(nu-2),
+      raw3 = r1 * (3-delta^2) * nu/(nu-3),
+      raw4 = 3*nu^2/(nu-2)/(nu-4))
 }
 
 
 
-# @title Solve \eqn{t}-Distribution from Moments
-# 
-# @description
-# A short description...
-# 
+
+
 
 
 
@@ -68,6 +47,9 @@ moment_st_ <- function(alpha = 0, nu = Inf) { # xi = 0, omega = 1,
 #' 
 #' @param kurtosis \link[base]{numeric} scalar
 #' 
+#' @param alpha \link[base]{numeric} scalar, 
+#' constrained slant parameter \eqn{\alpha}, currently only `alpha=0` allowed.
+#' 
 #' @details
 #' Function [moment2st()] solves the 
 #' location \eqn{\xi}, scale \eqn{\omega}, slant \eqn{\alpha} 
@@ -75,45 +57,79 @@ moment_st_ <- function(alpha = 0, nu = Inf) { # xi = 0, omega = 1,
 #' from user-specified mean \eqn{\mu} (default 0), standard deviation \eqn{\sigma} (default 1), 
 #' skewness and kurtosis.  
 #' 
-#' @returns
-#' Function [moment2st()] returns a \link[base]{length}-4 \link[base]{numeric} \link[base]{vector} 
-#' \eqn{(\xi, \omega, \alpha, \nu)}.
-#' 
-#' @keywords internal
-#' @name moment2st
-#' @importFrom stats optim
-#' @export
-moment2st <- function(mean = 0, sd = 1, skewness, kurtosis) {
-  optim(par = c(
-    xi = 0, omega = 1, alpha = 0, 
-    nu = 10 # do not allow Inf starting value
-  ), fn = function(x) {
-    mm <- moment_st_(alpha = x[3L], nu = x[4L])
-    crossprod(c(mean_moment_(mm, location = x[1L], scale = x[2L]), sd_moment_(mm, scale = x[2L]), skewness_moment_(mm), kurtosis_moment_(mm)) - c(mean, sd, skewness, kurtosis))
-  })$par
-}
-
-
-#' @rdname moment2st
-#' 
-#' @details
-#' An educational and demonstration function [moment2t_demo] solves 
+#' `alpha=0` solves 
 #' \eqn{(\omega, \nu)} parameters of \eqn{t}-distribution,
 #' from user-specified \eqn{\sigma} and kurtosis.
 #' This is a non-skewed distribution, thus 
 #' the location parameter \eqn{\xi=\mu=0}, and the slant parameter \eqn{\alpha=0}.
 #' 
-#' @returns
-#' Function [moment2t_demo()] returns a \link[base]{length}-2 
-#' \link[base]{numeric} \link[base]{vector} \eqn{(\omega, \nu)}.
 #' 
+#' 
+#' @returns
+#' Function [moment2st()] returns a \link[base]{length}-4 \link[base]{numeric} \link[base]{vector} 
+#' \eqn{(\xi, \omega, \alpha, \nu)}.
+#' 
+#' @keywords internal
 #' @importFrom stats optim
 #' @export
-moment2t_demo <- function(sd = 1, kurtosis) {
-  optim(par = c(
-    omega = 1, nu = 10 # do not allow Inf starting value
-  ), fn = function(x) {
-    mm <- moment_st_(alpha = 0, nu = x[2L])
-    crossprod(c(sd_moment_(mm, scale = x[1L]), kurtosis_moment_(mm)) - c(sd, kurtosis))
-  })$par
+moment2st <- function(
+    mean = 0, sd = 1, skewness, kurtosis,
+    alpha,
+    ...
+) {
+  
+  # starting value `nu = 10`
+  # ?stats::optim does not allow Inf starting value
+  
+  if (!missing(alpha)) {
+    
+    if (!identical(alpha, 0)) stop('use `alpha = 0` to constrain slant parameter alpha at 0')
+    
+    if (!missing(skewness) && (skewness != 0)) stop('skewness must be zero, for non-slant t-distribution')
+    
+    opt <- optim(par = c(xi = 0, omega = 1, nu = 10), fn = \(x) {
+      nu <- x[3L]
+      m <- moment_init(
+        raw1 = 0,
+        raw2 = nu/(nu-2),
+        raw3 = 0,
+        raw4 = 3*nu^2/(nu-2)/(nu-4)
+      )
+      
+      z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
+      z2 <- sd_moment_(m, scale = x[2L])
+      # no skewness!!
+      z4 <- kurtosis_moment_(m)
+      crossprod(c(z1, z2, z4) - c(mean, sd, kurtosis))
+    })
+    
+    return(opt$par)
+    
+  }
+  
+  opt <- optim(par = c(xi = 0, omega = 1, alpha = 0, nu = 10), fn = \(x) {
+    alpha <- x[3L]
+    nu <- x[4L]
+    delta <- alpha / sqrt(1 + alpha^2)
+    b <- sqrt(nu/pi) * gamma(nu/2 - 1/2) / gamma(nu/2) # equation (29); https://arxiv.org/pdf/0911.2342.pdf
+    r1 <- b * delta
+    m <- moment_init(
+      raw1 = r1,
+      raw2 = nu/(nu-2),
+      raw3 = r1 * (3-delta^2) * nu/(nu-3),
+      raw4 = 3*nu^2/(nu-2)/(nu-4)
+    )
+    
+    z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
+    z2 <- sd_moment_(m, scale = x[2L])
+    z3 <- skewness_moment_(m)
+    z4 <- kurtosis_moment_(m)
+    crossprod(c(z1, z2, z3, z4) - c(mean, sd, skewness, kurtosis))
+  })
+  
+  return(opt$par)
+  
 }
+
+
+

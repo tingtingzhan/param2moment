@@ -2,41 +2,31 @@
 
 #' @title Moments of Skew-Normal Distribution
 #' 
-#' @description
-#' Moments of \href{https://en.wikipedia.org/wiki/Skew_normal_distribution}{skew-normal distribution}, parameter nomenclature follows
-#' \link[sn]{dsn} function.
-#' 
-#' @param xi \link[base]{numeric} scalar or \link[base]{vector}, 
-#' location parameter \eqn{\xi}
-#' 
-#' @param omega \link[base]{numeric} scalar or \link[base]{vector}, 
-#' scale parameter \eqn{\omega}
-#' 
-#' @param alpha \link[base]{numeric} scalar or \link[base]{vector}, 
-#' slant parameter \eqn{\alpha}
+#' @param xi,omega,alpha \link[base]{numeric} scalars or \link[base]{vector}s, 
+#' location \eqn{\xi}, scale \eqn{\omega} and slant \eqn{\alpha},
+#' see function \link[sn]{dsn}.
 #' 
 #' @returns
 #' Function [moment_sn()] returns a \linkS4class{moment} object.
 #' 
 #' @keywords internal
-#' @importFrom methods new
 #' @export
 moment_sn <- function(xi = 0, omega = 1, alpha = 0) {
-  c(list(Class = 'moment', location = xi, scale = omega), moment_sn_(alpha = alpha)) |>
-    do.call(what = new)
-}
-
-moment_sn_ <- function(alpha = 0) {
   delta <- alpha / sqrt(1 + alpha^2)
   b <- sqrt(2/pi)
-  mu <- b * delta
-  moment_int(
-    distname = 'sn', 
-    mu = mu,
-    raw2 = 1,
-    raw3 = - pi/2 *mu^3 + 3*mu,
-    raw4 = 3)
+  r1 <- b * delta
+  new(Class = 'moment', 
+      distname = 'sn', 
+      location = xi, scale = omega,
+      raw1 = r1,
+      raw2 = 1,
+      raw3 = - pi/2 *r1^3 + 3*r1,
+      raw4 = 3)
 }
+
+
+
+
 
 
 
@@ -66,10 +56,23 @@ moment_sn_ <- function(alpha = 0) {
 #' @importFrom stats optim
 #' @export
 moment2sn <- function(mean = 0, sd = 1, skewness) {
-  optim(par = c(xi = 0, omega = 1, alpha = 0), fn = function(x) {
-    mm <- moment_sn_(alpha = x[3L])
-    crossprod(c(mean_moment_(mm, location = x[1L], scale = x[2L]), sd_moment_(mm, scale = x[2L]), skewness_moment_(mm)) - c(mean, sd, skewness))
-  })$par
+  opt <- optim(par = c(xi = 0, omega = 1, alpha = 0), fn = \(x) {
+    alpha <- x[3L]
+    delta <- alpha / sqrt(1 + alpha^2)
+    b <- sqrt(2/pi)
+    r1 <- b * delta
+    m <- moment_init(raw1 = r1, raw2 = 1, raw3 = - pi/2 *r1^3 + 3*r1, raw4 = 3)
+    
+    z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
+    z2 <- sd_moment_(m, scale = x[2L])
+    z3 <- skewness_moment_(m)
+    crossprod(c(z1, z2, z3) - c(mean, sd, skewness))
+  })
+  return(opt$par)
 }
+
+
+
+
 
 

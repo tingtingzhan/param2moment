@@ -20,8 +20,10 @@ Depends: R (>= 4.4.0), ggplot2, geomtextpath
 Imports: methods
 Suggests: 
     knitr,
+    quarto,
     rmarkdown,
+    latex2exp,
     sn,
     TukeyGH77
 RoxygenNote: 7.3.2
-VignetteBuilder: knitr
+VignetteBuilder: quarto

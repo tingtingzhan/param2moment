@@ -7,20 +7,14 @@
 moment_sn(xi = 0, omega = 1, alpha = 0)
 }
 \arguments{
-\item{xi}{\link[base]{numeric} scalar or \link[base]{vector},
-location parameter \eqn{\xi}}
-
-\item{omega}{\link[base]{numeric} scalar or \link[base]{vector},
-scale parameter \eqn{\omega}}
-
-\item{alpha}{\link[base]{numeric} scalar or \link[base]{vector},
-slant parameter \eqn{\alpha}}
+\item{xi, omega, alpha}{\link[base]{numeric} scalars or \link[base]{vector}s,
+location \eqn{\xi}, scale \eqn{\omega} and slant \eqn{\alpha},
+see function \link[sn]{dsn}.}
 }
 \value{
 Function \code{\link[=moment_sn]{moment_sn()}} returns a \linkS4class{moment} object.
 }
 \description{
-Moments of \href{https://en.wikipedia.org/wiki/Skew_normal_distribution}{skew-normal distribution}, parameter nomenclature follows
-\link[sn]{dsn} function.
+Moments of Skew-Normal Distribution
 }
 \keyword{internal}

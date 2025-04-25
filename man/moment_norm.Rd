@@ -7,17 +7,13 @@
 moment_norm(mean = 0, sd = 1)
 }
 \arguments{
-\item{mean}{\link[base]{numeric} scalar or \link[base]{vector},
-mean parameter \eqn{\mu}}
-
-\item{sd}{\link[base]{numeric} scalar or \link[base]{vector},
-standard deviation \eqn{\sigma}}
+\item{mean, sd}{\link[base]{numeric} scalars or \link[base]{vector}s,
+see function \link[stats]{dnorm}}
 }
 \value{
 Function \code{\link[=moment_norm]{moment_norm()}} returns a \linkS4class{moment} object.
 }
 \description{
-Moments of \href{https://en.wikipedia.org/wiki/Normal_distribution}{normal distribution}, parameter nomenclature follows
-\link[stats]{dnorm} function.
+Moments of \href{https://en.wikipedia.org/wiki/Normal_distribution}{normal distribution}.
 }
 \keyword{internal}

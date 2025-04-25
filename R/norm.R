@@ -3,14 +3,10 @@
 #' @title Moments of Normal Distribution
 #' 
 #' @description
-#' Moments of \href{https://en.wikipedia.org/wiki/Normal_distribution}{normal distribution}, parameter nomenclature follows
-#' \link[stats]{dnorm} function.
+#' Moments of \href{https://en.wikipedia.org/wiki/Normal_distribution}{normal distribution}.
 #' 
-#' @param mean \link[base]{numeric} scalar or \link[base]{vector}, 
-#' mean parameter \eqn{\mu}
-#' 
-#' @param sd \link[base]{numeric} scalar or \link[base]{vector}, 
-#' standard deviation \eqn{\sigma}
+#' @param mean,sd \link[base]{numeric} scalars or \link[base]{vector}s, 
+#' see function \link[stats]{dnorm}
 #' 
 #' @returns
 #' Function [moment_norm()] returns a \linkS4class{moment} object.
@@ -18,7 +14,9 @@
 #' @keywords internal
 #' @export
 moment_norm <- function(mean = 0, sd = 1) {
-  c(list(Class = 'moment', location = mean, scale = sd), moment_int(distname = 'norm', mu = 0, raw2 = 1, raw3 = 0, raw4 = 3)) |>
-    do.call(what = new)
+  new(Class = 'moment', 
+      distname = 'norm', 
+      location = mean, scale = sd, 
+      raw1 = 0, raw2 = 1, raw3 = 0, raw4 = 3)
 }
 

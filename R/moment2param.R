@@ -8,11 +8,7 @@
 #' Currently supported are `'GH'` for Tukey \eqn{g}-&-\eqn{h} distribution,
 #' `'sn'` for skew-normal distribution and `'st'` for skew-\eqn{t} distribution
 #' 
-#' @param FUN \link[base]{name} or \link[base]{character} scalar,
-#' (name of) \link[base]{function} used to solve the distribution parameters from moments.
-#' Default is `paste0('moment2', distname)`, e.g., [moment2GH] will be used for `distname = 'GH'`.
-#' To use one of the educational functions, specify
-#' `FUN = moment2GH_g_demo` or `FUN = 'moment2GH_g_demo'`.
+#' @param MoreArgs ..
 #' 
 #' @param hjust ..
 #' 
@@ -29,13 +25,13 @@
 #' @export
 moment2param <- function(
     distname, 
-    FUN = paste0('moment2', distname), 
+    MoreArgs = NULL,
     hjust = .5,
     ...
 ) {
   
   # length recycled!
-  ret <- .mapply(FUN = FUN, dots = list(...), MoreArgs = NULL)
+  ret <- .mapply(FUN = paste0('moment2', distname), dots = list(...), MoreArgs = MoreArgs)
   
   label <- ret |> 
     lapply(FUN = \(x) { # tzh's ?gg.tzh:::getval_ function

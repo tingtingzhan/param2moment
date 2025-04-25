@@ -7,24 +7,15 @@
 moment_st(xi = 0, omega = 1, alpha = 0, nu = Inf)
 }
 \arguments{
-\item{xi}{\link[base]{numeric} scalar or \link[base]{vector},
-location parameter \eqn{\xi}}
-
-\item{omega}{\link[base]{numeric} scalar or \link[base]{vector},
-scale parameter \eqn{\omega}}
-
-\item{alpha}{\link[base]{numeric} scalar or \link[base]{vector},
-slant parameter \eqn{\alpha}}
-
-\item{nu}{\link[base]{numeric} scalar or \link[base]{vector},
-degree of freedom \eqn{\nu}}
+\item{xi, omega, alpha, nu}{\link[base]{numeric} scalars or \link[base]{vector}s,
+location \eqn{\xi}, scale \eqn{\omega}, slant \eqn{\alpha} and degree of freedom \eqn{\nu}
+of function \link[sn]{dst}.}
 }
 \value{
 Function \code{\link[=moment_st]{moment_st()}} returns a \linkS4class{moment} object.
 }
 \description{
-Moments of skew-\eqn{t} distribution, parameter nomenclature follows
-\link[sn]{dst} function.
+Moments of Skew-\eqn{t} Distribution
 }
 \references{
 Raw moments of skew-\eqn{t}: \url{https://arxiv.org/abs/0911.2342}
