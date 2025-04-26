@@ -148,33 +148,54 @@ moment2GH <- function(
   if (g0 & h0) stop('just normal distribution')
   
   opt <- if (g0) {
-    optim(par = c(A = 0, B = 1, h = 0), fn = function(x) {
-      m <- moment_GH_(g = 0, h = x[3L]) |>
-        do.call(what = moment_init)
-      z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
-      z2 <- sd_moment_(m, scale = x[2L])
-      z4 <- kurtosis_moment_(m)
-      crossprod(c(z1, z2, z4) - c(mean, sd, kurtosis))
-    })
+    if (mean != 0) {
+      target <- c(mean, sd, kurtosis)
+      optim(par = c(A = 0, B = 1, h = 0), fn = function(x) {
+        m <- moment_GH_(g = 0, h = x[3L]) |>
+          do.call(what = moment_init)
+        z <- c(
+          mean = mean_moment_(m, location = x[1L], scale = x[2L]),
+          sd = sd_moment_(m, scale = x[2L]),
+          kurtosis = kurtosis_moment_(m)
+        )
+        crossprod(z - target)
+      })
+    } else {
+      target <- c(sd, kurtosis)
+      optim(par = c(B = 1, h = 0), fn = function(x) {
+        m <- moment_GH_(g = 0, h = x[2L]) |>
+          do.call(what = moment_init)
+        z <- c(
+          sd = sd_moment_(m, scale = x[1L]),
+          kurtosis = kurtosis_moment_(m)
+        )
+        crossprod(z - target)
+      })
+    }
   } else if (h0) {
+    target <- c(mean, sd, skewness)
     optim(par = c(A = 0, B = 1, g = 0), fn = function(x) {
       m <- moment_GH_(g = x[3L], h = 0) |>
         do.call(what = moment_init)
-      z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
-      z2 <- sd_moment_(m, scale = x[2L])
-      z3 <- skewness_moment_(m)
-      z4 <- kurtosis_moment_(m)
-      crossprod(c(z1, z2, z3) - c(mean, sd, skewness))
+      z <- c(
+        mean = mean_moment_(m, location = x[1L], scale = x[2L]),
+        sd = sd_moment_(m, scale = x[2L]),
+        skewness = skewness_moment_(m)
+      )
+      crossprod(z - target)
     })
   } else {
+    target <- c(mean, sd, skewness, kurtosis)
     optim(par = c(A = 0, B = 1, g = 0, h = 0), fn = function(x) {
       m <- moment_GH_(g = x[3L], h = x[4L]) |>
         do.call(what = moment_init)
-      z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
-      z2 <- sd_moment_(m, scale = x[2L])
-      z3 <- skewness_moment_(m)
-      z4 <- kurtosis_moment_(m)
-      crossprod(c(z1, z2, z3, z4) - c(mean, sd, skewness, kurtosis))
+      z <- c(
+        mean = mean_moment_(m, location = x[1L], scale = x[2L]),
+        sd = sd_moment_(m, scale = x[2L]),
+        skewness = skewness_moment_(m),
+        kurtosis = kurtosis_moment_(m)
+      )
+      crossprod(z - target)
     })
   }
   

@@ -81,51 +81,62 @@ moment2st <- function(
   # starting value `nu = 10`
   # ?stats::optim does not allow Inf starting value
   
-  if (!missing(alpha)) {
+  opt <- if (!missing(alpha)) {
     
     if (!identical(alpha, 0)) stop('use `alpha = 0` to constrain slant parameter alpha at 0')
-    
     if (!missing(skewness) && (skewness != 0)) stop('skewness must be zero, for non-slant t-distribution')
     
-    opt <- optim(par = c(xi = 0, omega = 1, nu = 10), fn = \(x) {
-      nu <- x[3L]
+    if (mean != 0) {
+      target <- c(mean, sd, kurtosis)
+      optim(par = c(xi = 0, omega = 1, nu = 10), fn = \(x) {
+        nu <- x[3L]
+        m <- moment_init(raw1 = 0, raw2 = nu/(nu-2), raw3 = 0, raw4 = 3*nu^2/(nu-2)/(nu-4))
+        z <- c(
+          mean = mean_moment_(m, location = x[1L], scale = x[2L]),
+          sd = sd_moment_(m, scale = x[2L]),
+          kurtosis = kurtosis_moment_(m)
+        )
+        crossprod(z - target)
+      })
+    } else {
+      target <- c(sd, kurtosis)
+      optim(par = c(omega = 1, nu = 10), fn = \(x) {
+        nu <- x[2L]
+        m <- moment_init(raw1 = 0, raw2 = nu/(nu-2), raw3 = 0, raw4 = 3*nu^2/(nu-2)/(nu-4))
+        z <- c(
+          sd = sd_moment_(m, scale = x[1L]),
+          kurtosis = kurtosis_moment_(m)
+        )
+        crossprod(z - target)
+      })
+    }
+    
+  } else {
+  
+    target <- c(mean, sd, skewness, kurtosis)
+  
+    optim(par = c(xi = 0, omega = 1, alpha = 0, nu = 10), fn = \(x) {
+      alpha <- x[3L]
+      nu <- x[4L]
+      delta <- alpha / sqrt(1 + alpha^2)
+      b <- sqrt(nu/pi) * gamma(nu/2 - 1/2) / gamma(nu/2) # equation (29); https://arxiv.org/pdf/0911.2342.pdf
+      r1 <- b * delta
       m <- moment_init(
-        raw1 = 0,
+        raw1 = r1,
         raw2 = nu/(nu-2),
-        raw3 = 0,
+        raw3 = r1 * (3-delta^2) * nu/(nu-3),
         raw4 = 3*nu^2/(nu-2)/(nu-4)
       )
-      
-      z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
-      z2 <- sd_moment_(m, scale = x[2L])
-      # no skewness!!
-      z4 <- kurtosis_moment_(m)
-      crossprod(c(z1, z2, z4) - c(mean, sd, kurtosis))
+      z <- c(
+        mean = mean_moment_(m, location = x[1L], scale = x[2L]),
+        sd = sd_moment_(m, scale = x[2L]),
+        skewness = skewness_moment_(m),
+        kurtosis = kurtosis_moment_(m)
+      )
+      crossprod(z - target)
     })
     
-    return(opt$par)
-    
   }
-  
-  opt <- optim(par = c(xi = 0, omega = 1, alpha = 0, nu = 10), fn = \(x) {
-    alpha <- x[3L]
-    nu <- x[4L]
-    delta <- alpha / sqrt(1 + alpha^2)
-    b <- sqrt(nu/pi) * gamma(nu/2 - 1/2) / gamma(nu/2) # equation (29); https://arxiv.org/pdf/0911.2342.pdf
-    r1 <- b * delta
-    m <- moment_init(
-      raw1 = r1,
-      raw2 = nu/(nu-2),
-      raw3 = r1 * (3-delta^2) * nu/(nu-3),
-      raw4 = 3*nu^2/(nu-2)/(nu-4)
-    )
-    
-    z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
-    z2 <- sd_moment_(m, scale = x[2L])
-    z3 <- skewness_moment_(m)
-    z4 <- kurtosis_moment_(m)
-    crossprod(c(z1, z2, z3, z4) - c(mean, sd, skewness, kurtosis))
-  })
   
   return(opt$par)
   

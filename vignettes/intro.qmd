@@ -168,6 +168,7 @@ $$
 moment_norm(mean = 1.2, sd = .7)
 ```
 
+
 ## [Skew-Normal](https://en.wikipedia.org/wiki/Skew_normal_distribution) Distribution
 
 ```{r}
@@ -237,12 +238,18 @@ moment2GH(skewness = .2, kurtosis = .3)
 
 
 
+
+## [Gamma Distribution](https://en.wikipedia.org/wiki/Gamma_distribution)
+
+
+
 # Batch Visualization
 
 ```{r}
 skw = c(.2, .5, .8)
 krt = c(.5, 1, 1.5)
 ```
+
 
 ## Kurtosis only
 
@@ -312,5 +319,11 @@ p1 + p2
 ```
 
 
+```{r}
+#| fig-height: 3
+#| fig-width: 5
+moment2param(distname = 'gamma', skewness = skw, kurtosis = 3, hjust = .4) +
+  xlim(0, 4) + labs(y = TeX('$gamma$'))
+```
 
 

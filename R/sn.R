@@ -56,17 +56,19 @@ moment_sn <- function(xi = 0, omega = 1, alpha = 0) {
 #' @importFrom stats optim
 #' @export
 moment2sn <- function(mean = 0, sd = 1, skewness) {
+  target <- c(mean, sd, skewness)
   opt <- optim(par = c(xi = 0, omega = 1, alpha = 0), fn = \(x) {
     alpha <- x[3L]
     delta <- alpha / sqrt(1 + alpha^2)
     b <- sqrt(2/pi)
     r1 <- b * delta
     m <- moment_init(raw1 = r1, raw2 = 1, raw3 = - pi/2 *r1^3 + 3*r1, raw4 = 3)
-    
-    z1 <- mean_moment_(m, location = x[1L], scale = x[2L])
-    z2 <- sd_moment_(m, scale = x[2L])
-    z3 <- skewness_moment_(m)
-    crossprod(c(z1, z2, z3) - c(mean, sd, skewness))
+    z <- c(
+      mean = mean_moment_(m, location = x[1L], scale = x[2L]),
+      sd = sd_moment_(m, scale = x[2L]),
+      skewness = skewness_moment_(m)
+    )
+    crossprod(z - target)
   })
   return(opt$par)
 }
