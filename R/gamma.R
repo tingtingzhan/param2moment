@@ -80,6 +80,19 @@ moment2gamma <- function(...) {
 
 
 
-
+if (FALSE) {
+  # learn gamma
+  scale = .5; shape = 2.3
+  
+  library(gsl) # recommended by ?stats::pgamma
+  pgamma(q = pi, shape = shape, scale = scale)
+  gamma(shape)
+  gamma_inc_P(a = shape, x = pi)
+  pgamma(q = pi, shape = shape, scale = scale) * gamma(shape) # wrong. `scale` not considered
+  
+  gamma_inc_P(1.8, 5) - pgamma(5, 1.8)  # should be small
+  microbenchmark(gamma_inc_P(1.8, 5), pgamma(5, 1.8)) # super slow haha
+  
+} # learn gamma
 
 

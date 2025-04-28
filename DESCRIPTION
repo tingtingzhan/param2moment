@@ -16,14 +16,8 @@ Authors@R: c(person(given = "Tingting", family = "Zhan", role =
        = c(ORCID = '0000-0001-9971-4844')))
 Language: en-US
 Roxygen: list(markdown = TRUE)
-Depends: R (>= 4.4.0), ggplot2, geomtextpath
-Imports: methods
-Suggests: 
-    knitr,
-    quarto,
-    rmarkdown,
-    latex2exp,
-    sn,
-    TukeyGH77
+Depends: R (>= 4.5.0)
+Imports: methods, ggplot2, geomtextpath
+Suggests: latex2exp, sn, TukeyGH77, knitr, quarto, rmarkdown
 RoxygenNote: 7.3.2
 VignetteBuilder: quarto
