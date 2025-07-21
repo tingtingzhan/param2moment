@@ -10,6 +10,11 @@ toc-location: left
 toc-depth: 4
 toc-title: ''
 editor: source
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#>" 
+bibliography: param2moment.bib
 vignette: >
   %\VignetteIndexEntry{intro}
   %\VignetteEngine{quarto::html}
@@ -49,44 +54,15 @@ Examples in this vignette require that the `search` path has
 library(param2moment)
 library(ggplot2)
 library(geomtextpath)
-library(latex2exp)
 library(TukeyGH77)
 library(sn)
 ```
 
 ```{r}
 #| echo: false
-library(knitr) # for tables in this vignette
 op = par(no.readonly = TRUE)
-#options(mc.cores = 1L) # for CRAN submission
 theme_bw() |>
   theme_set()
-```
-
-## Terms and Abbreviations
-
-```{r}
-#| echo: false
-#| results: asis
-c(
-  '[|>](https://search.r-project.org/R/refmans/base/html/pipeOp.html)', 'Forward pipe operator introduced in `R` 4.1.0', 
-  '[`all.equal.numeric`](https://search.r-project.org/R/refmans/base/html/all.equal.html)', 'Test of near equality',
-  '`CRAN`, `R`', '[The Comprehensive R Archive Network](https://cran.r-project.org)',
-  '[`curve`](https://search.r-project.org/R/refmans/graphics/html/curve.html)', 'Function plots',
-  '[`.lm.fit`](https://search.r-project.org/R/refmans/stats/html/lmfit.html)', 'Least squares regression, the internal workhorse',
-  '[`mad`](https://search.r-project.org/R/refmans/stats/html/mad.html)', 'Median Absolute Deviation',
-  '[`median`](https://search.r-project.org/R/refmans/stats/html/median.html)', 'Median',
-  '[`dnorm`, `pnorm`, `qnorm`, `rnorm`](https://search.r-project.org/R/refmans/stats/html/Normal.html)', 'Normal Distribution',
-  '[`optim`](https://search.r-project.org/R/refmans/stats/html/optim.html), [`optimize`](https://search.r-project.org/R/refmans/stats/html/optimize.html)', 'Optimization',
-  '[`sd`](https://search.r-project.org/R/refmans/stats/html/sd.html)', 'Standard Deviation',
-  '[`search`](https://search.r-project.org/R/refmans/base/html/search.html)', 'Search path',
-  '[`seed`](https://search.r-project.org/R/refmans/base/html/Random.html)', 'Random number generation seed',
-  '[`vuniroot`](https://search.r-project.org/CRAN/refmans/rstpm2/html/vuniroot.html)', 'Vectorised one-dimensional root-finding, in package [`rstpm2`](https://CRAN.R-project.org/package=rstpm2)'
-) |>
-  matrix(nrow = 2L, dimnames = list(c('Term / Abbreviation', 'Description'), NULL)) |>
-  t.default() |>
-  as.data.frame.matrix() |> 
-  kable() 
 ```
 
 # Introduction
@@ -97,56 +73,32 @@ For random variable $X$,
 
 ## Raw Moments
 
-```{r}
-#| echo: false
-#| results: asis
-c(
-  '`@raw1`', '$\\mu = \\text{E}(X)$',
-  '`@raw2`', '$\\text{E}(X^2)$',
-  '`@raw3`', '$\\text{E}(X^3)$',
-  '`@raw4`', '$\\text{E}(X^4)$'
-) |>
-  matrix(nrow = 2L, dimnames = list(c('Slot', 'Raw Moment'), NULL)) |>
-  t.default() |>
-  as.data.frame.matrix() |> 
-  kable() 
-```
+| Slot    | Description         |
+|---------|---------------------|
+| `@raw1` | $\mu = \text{E}(X)$ |
+| `@raw2` | $\text{E}(X^2)$     |
+| `@raw3` | $\text{E}(X^3)$     |
+| `@raw4` | $\text{E}(X^4)$     |
 
 ## Central Moments
 
 According to [Binomial theorem](https://en.wikipedia.org/wiki/Binomial_theorem),
 
-```{r}
-#| echo: false
-#| results: asis
-c(
-  '', '$0 = \\text{E}(X-\\mu)$', '', '',
-  '`@central2`', '$\\sigma^2 = \\text{E}(X-\\mu)^2$', '$\\text{E}(X^2) - \\mu^2$', '$\\text{E}(X^2) - 2\\mu\\text{E}(X) + \\mu^2$',
-  '`@central3`', '$\\text{E}(X-\\mu)^3$', '$\\text{E}(X^3) - 3\\mu\\text{E}(X^2) + 2\\mu^3$', '$\\text{E}(X^3) - 3\\mu\\text{E}(X^2) + 3\\mu^2\\text{E}(X) - \\mu^3$',
-  '`@central4`', '$\\text{E}(X-\\mu)^4$', '$\\text{E}(X^4) - 4\\mu\\text{E}(X^3) + 6\\mu^2\\text{E}(X^2) - 3\\mu^4$', '$\\text{E}(X^4) - 4\\mu\\text{E}(X^3) + 6\\mu^2 \\text{E}(X^2) - 4\\mu^3\\text{E}(X) + \\mu^4$'
-) |>
-  matrix(nrow = 4L, dimnames = list(c('Slot', '[Central Moment](https://en.wikipedia.org/wiki/Central_moment)', 'Value', 'Derivation'), NULL)) |>
-  t.default() |>
-  as.data.frame.matrix() |> 
-  kable() 
-```
+| Slot | [Central Moment](https://en.wikipedia.org/wiki/Central_moment) | Value | Derivation |
+|------------------|------------------|------------------|------------------|
+|  | $0 = \text{E}(X-\mu)$ |  |  |
+| `@central2` | $\sigma^2 = \text{E}(X-\mu)^2$ | $\text{E}(X^2) - \mu^2$ | $\text{E}(X^2) - 2\mu\text{E}(X) + \mu^2$ |
+| `@central3` | $\text{E}(X-\mu)^3$ | $\text{E}(X^3) - 3\mu\text{E}(X^2) + 2\mu^3$ | $\text{E}(X^3) - 3\mu\text{E}(X^2) + 3\mu^2\text{E}(X) - \mu^3$ |
+| `@central4` | $\text{E}(X-\mu)^4$ | $\text{E}(X^4) - 4\mu\text{E}(X^3) + 6\mu^2\text{E}(X^2) - 3\mu^4$ | $\text{E}(X^4) - 4\mu\text{E}(X^3) + 6\mu^2 \text{E}(X^2) - 4\mu^3\text{E}(X) + \mu^4$ |
 
 ## Standardized Moments
 
-```{r}
-#| echo: false
-#| results: asis
-c(
-  '', '$0 = \\text{E}(X-\\mu)/\\sigma$', '',
-  '', '$1 = \\text{E}(X-\\mu)^2/\\sigma^2$', '',
-  '`@standardized3`', '$\\text{E}(X-\\mu)^3/\\sigma^3$', '[skewness](https://en.wikipedia.org/wiki/Skewness)',
-  '`@standardized4`', '$\\text{E}(X-\\mu)^4/\\sigma^4$', '[kurtosis](https://en.wikipedia.org/wiki/Kurtosis)'
-) |>
-  matrix(nrow = 3L, dimnames = list(c('Slot', '[Standardized Moment](https://en.wikipedia.org/wiki/Standardized_moment)', 'Description'), NULL)) |>
-  t.default() |>
-  as.data.frame.matrix() |> 
-  kable() 
-```
+| Slot | [Standardized Moment](https://en.wikipedia.org/wiki/Standardized_moment) | Description |
+|------------------------|------------------------|------------------------|
+|  | $0 = \text{E}(X-\mu)/\sigma$ |  |
+|  | $1 = \text{E}(X-\mu)^2/\sigma^2$ |  |
+| `@standardized3` | $\text{E}(X-\mu)^3/\sigma^3$ | [skewness](https://en.wikipedia.org/wiki/Skewness) |
+| `@standardized4` | $\text{E}(X-\mu)^4/\sigma^4$ | [kurtosis](https://en.wikipedia.org/wiki/Kurtosis) |
 
 ## Location-Scale Transformation
 
@@ -245,10 +197,12 @@ krt = c(.5, 1, 1.5)
 ```{r}
 #| fig-height: 3
 #| fig-width: 10
+#| code-fold: true
+#| code-summary: '[R] Student-t and Tukey-h'
 p1 = moment2param(distname = 'st', MoreArgs = list(alpha = 0), kurtosis = krt) + 
-  xlim(-1.5, 1.5) + labs(y = TeX('Student-$t$'))
+  xlim(-1.5, 1.5) + labs(y = latex2exp::TeX('Student-$t$'))
 p2 = moment2param(distname = 'GH', MoreArgs = list(g = 0), kurtosis = krt) + 
-  xlim(-1.5, 1.5) + labs(y = TeX('Tukey\'s $h$'))
+  xlim(-1.5, 1.5) + labs(y = latex2exp::TeX('Tukey\'s $h$'))
 p1 + p2
 ```
 
@@ -263,13 +217,15 @@ Skew-Normal vs. Tukey's $g$
 ```{r}
 #| fig-height: 3
 #| fig-width: 10
+#| code-fold: true
+#| code-summary: '[R] Skew-Normal and Tukey-g'
 p1 = moment2param(dist = 'sn', skewness = skw, hjust = .42) + xlim(-2, 2.5) + labs(y = 'Skew-Normal')
 p2 = moment2param(dist = 'GH', MoreArgs = list(h = 0), skewness = skw, hjust = .42) + 
-  xlim(-2, 2.5) + labs(y = TeX('Tukey\'s $g$'))
+  xlim(-2, 2.5) + labs(y = latex2exp::TeX('Tukey\'s $g$'))
 p1 + p2
 ```
 
-## Skewness and Kurtosis
+## Skewness & Kurtosis
 
 Skew-$t$ vs. Tukey's $g$-&-$h$
 
@@ -280,16 +236,43 @@ Skew-$t$ vs. Tukey's $g$-&-$h$
 ```{r}
 #| fig-height: 3
 #| fig-width: 10
+#| code-fold: true
+#| code-summary: '[R] Skew-t and Tukey-gh'
 p1 = moment2param(distname = 'st', skewness = skw, kurtosis = krt, hjust = .35) +
-  xlim(-2, 2.5) + labs(y = TeX('Skew-$t$'))
+  xlim(-2, 2.5) + labs(y = latex2exp::TeX('Skew-$t$'))
 p2 = moment2param(distname = 'GH', skewness = skw, kurtosis = krt, hjust = .35) +
-  xlim(-2, 2.5) + labs(y = TeX('Tukey\'s $g$-&-$h$'))
+  xlim(-2, 2.5) + labs(y = latex2exp::TeX('Tukey\'s $g$-&-$h$'))
 p1 + p2
 ```
 
 ```{r}
 #| fig-height: 3
 #| fig-width: 5
+#| code-fold: true
+#| code-summary: '[R] Gamma'
 moment2param(distname = 'gamma', skewness = skw, kurtosis = 3, hjust = .4) +
-  xlim(0, 4) + labs(y = TeX('$gamma$'))
+  xlim(0, 4) + labs(y = latex2exp::TeX('$gamma$'))
 ```
+
+
+# Appendix 
+
+## Terms and Abbreviations
+
+| Term / Abbreviation | Description |
+|------------------------------------|------------------------------------|
+| [`|>`](https://search.r-project.org/R/refmans/base/html/pipeOp.html) | Forward pipe operator introduced in `R` 4.1.0 |
+| [`all.equal.numeric`](https://search.r-project.org/R/refmans/base/html/all.equal.html) | Test of near equality |
+| `CRAN`, `R` | [The Comprehensive R Archive Network](https://cran.r-project.org) |
+| [`curve`](https://search.r-project.org/R/refmans/graphics/html/curve.html) | Function plots |
+| [`.lm.fit`](https://search.r-project.org/R/refmans/stats/html/lmfit.html) | Least squares regression, the internal workhorse |
+| [`mad`](https://search.r-project.org/R/refmans/stats/html/mad.html) | Median Absolute Deviation |
+| [`median`](https://search.r-project.org/R/refmans/stats/html/median.html) | Median |
+| [`dnorm`, `pnorm`, `qnorm`, `rnorm`](https://search.r-project.org/R/refmans/stats/html/Normal.html) | Normal Distribution |
+| [`optim`](https://search.r-project.org/R/refmans/stats/html/optim.html), [`optimize`](https://search.r-project.org/R/refmans/stats/html/optimize.html) | Optimization |
+| [`sd`](https://search.r-project.org/R/refmans/stats/html/sd.html) | Standard Deviation |
+| [`search`](https://search.r-project.org/R/refmans/base/html/search.html) | Search path |
+| [`seed`](https://search.r-project.org/R/refmans/base/html/Random.html) | Random number generation seed |
+| [`vuniroot`](https://search.r-project.org/CRAN/refmans/rstpm2/html/vuniroot.html) | Vectorised one-dimensional root-finding, in package [`rstpm2`](https://CRAN.R-project.org/package=rstpm2) |
+
+
