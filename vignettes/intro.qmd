@@ -9,7 +9,7 @@ toc: true
 toc-location: left
 toc-depth: 4
 toc-title: ''
-editor: visual
+editor: source
 vignette: >
   %\VignetteIndexEntry{intro}
   %\VignetteEngine{quarto::html}

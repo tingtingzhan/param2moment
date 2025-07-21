@@ -67,7 +67,7 @@ moment2param <- function(
     ), 
     MoreArgs = list(
       fun = paste0('d', distname) |> get(), 
-      geom = 'textpath', # must Depends geomtextpath; Imports does not work. why??
+      geom = 'textpath',
       size = 2,
       show.legend = FALSE
     )
