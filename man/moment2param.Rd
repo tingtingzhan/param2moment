@@ -4,20 +4,18 @@
 \alias{moment2param}
 \title{Moment to Parameters: A Batch Process}
 \usage{
-moment2param(distname, MoreArgs = NULL, hjust = 0.5, ...)
+moment2param(distname, ..., MoreArgs = NULL)
 }
 \arguments{
 \item{distname}{\link[base]{character} scalar, distribution name.
 Currently supported are \code{'GH'} for Tukey \eqn{g}-&-\eqn{h} distribution,
 \code{'sn'} for skew-normal distribution and \code{'st'} for skew-\eqn{t} distribution}
 
-\item{MoreArgs}{..}
-
-\item{hjust}{..}
-
 \item{...}{\link[base]{numeric} scalars,
 some or all of \code{mean}, \code{sd}, \code{skewness} and \code{kurtosis}
 (length will be recycled).}
+
+\item{MoreArgs}{..}
 }
 \value{
 Function \code{\link[=moment2param]{moment2param()}} returns a \link[base]{list} of \link[base]{numeric} \link[base]{vector}s.

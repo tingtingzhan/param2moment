@@ -10,8 +10,6 @@
 #' 
 #' @param MoreArgs ..
 #' 
-#' @param hjust ..
-#' 
 #' @param ... \link[base]{numeric} scalars, 
 #' some or all of `mean`, `sd`, `skewness` and `kurtosis`
 #' (length will be recycled).
@@ -20,20 +18,36 @@
 #' Function [moment2param()] returns a \link[base]{list} of \link[base]{numeric} \link[base]{vector}s.
 #' 
 #' @keywords internal
-#' @importFrom ggplot2 ggplot aes stat_function labs
-#' @importFrom geomtextpath geom_textpath 
 #' @export
-moment2param <- function(
-    distname, 
-    MoreArgs = NULL,
-    hjust = .5,
-    ...
-) {
+moment2param <- function(distname, ..., MoreArgs = NULL) {
   
   # length recycled!
   ret <- .mapply(FUN = paste0('moment2', distname), dots = list(...), MoreArgs = MoreArgs)
   
-  label <- ret |> 
+  attr(ret, which = 'distname') <- distname
+  class(ret) <- 'moment2param'
+  return(ret)
+  
+}
+
+#' @title autoplot.moment2param
+#' 
+#' @param object ..
+#' 
+#' @param hjust ..
+#' 
+#' @param ... ..
+#' 
+#' @keywords internal
+#' @importFrom ggplot2 autoplot ggplot aes stat_function labs
+#' @importFrom geomtextpath geom_textpath 
+#' @export autoplot.moment2param
+#' @export
+autoplot.moment2param <- function(object, hjust = .5, ...) {
+  
+  distname <- attr(object, which = 'distname', exact = TRUE)
+  
+  label <- object |> 
     lapply(FUN = \(x) { # tzh's ?gg.tzh:::getval_ function
       z <- sprintf(fmt = '%s = %.3g', names(x), x) |>
         sub(pattern = '([-]?)0[.]', replacement = '\\1.') |> # remove leading zero
@@ -52,7 +66,7 @@ moment2param <- function(
   
   # tzh's ?gg.tzh::paths_function function
   
-  mp <- ret |>
+  mp <- object |>
     seq_along() |>
     sprintf(fmt = '%02d') |> # so that '10' is after '09'
     lapply(FUN = \(i) aes(color = i))
@@ -61,7 +75,7 @@ moment2param <- function(
     FUN = stat_function, 
     dots = list(
       mapping = mp, 
-      args = ret,
+      args = object,
       label = label, # recycled
       hjust = hjust # recycled
     ), 
@@ -73,12 +87,9 @@ moment2param <- function(
     )
   )
   
-  p <- ggplot() + 
+  ggplot() + 
     lyr +
     labs(y = distname)
-  
-  attr(p, which = 'value') <- ret
-  return(p)
   
 }
 

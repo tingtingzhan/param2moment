@@ -199,9 +199,9 @@ krt = c(.5, 1, 1.5)
 #| fig-width: 10
 #| code-fold: true
 #| code-summary: '[R] Student-t and Tukey-h'
-p1 = moment2param(distname = 'st', MoreArgs = list(alpha = 0), kurtosis = krt) + 
+p1 = moment2param(distname = 'st', MoreArgs = list(alpha = 0), kurtosis = krt) |> autoplot() + 
   xlim(-1.5, 1.5) + labs(y = latex2exp::TeX('Student-$t$'))
-p2 = moment2param(distname = 'GH', MoreArgs = list(g = 0), kurtosis = krt) + 
+p2 = moment2param(distname = 'GH', MoreArgs = list(g = 0), kurtosis = krt) |> autoplot() + 
   xlim(-1.5, 1.5) + labs(y = latex2exp::TeX('Tukey\'s $h$'))
 p1 + p2
 ```
@@ -219,8 +219,9 @@ Skew-Normal vs. Tukey's $g$
 #| fig-width: 10
 #| code-fold: true
 #| code-summary: '[R] Skew-Normal and Tukey-g'
-p1 = moment2param(dist = 'sn', skewness = skw, hjust = .42) + xlim(-2, 2.5) + labs(y = 'Skew-Normal')
-p2 = moment2param(dist = 'GH', MoreArgs = list(h = 0), skewness = skw, hjust = .42) + 
+p1 = moment2param(dist = 'sn', skewness = skw) |> autoplot(hjust = .42) + 
+  xlim(-2, 2.5) + labs(y = 'Skew-Normal')
+p2 = moment2param(dist = 'GH', MoreArgs = list(h = 0), skewness = skw) |> autoplot(hjust = .42) + 
   xlim(-2, 2.5) + labs(y = latex2exp::TeX('Tukey\'s $g$'))
 p1 + p2
 ```
@@ -238,9 +239,9 @@ Skew-$t$ vs. Tukey's $g$-&-$h$
 #| fig-width: 10
 #| code-fold: true
 #| code-summary: '[R] Skew-t and Tukey-gh'
-p1 = moment2param(distname = 'st', skewness = skw, kurtosis = krt, hjust = .35) +
+p1 = moment2param(distname = 'st', skewness = skw, kurtosis = krt) |> autoplot(hjust = .35) +
   xlim(-2, 2.5) + labs(y = latex2exp::TeX('Skew-$t$'))
-p2 = moment2param(distname = 'GH', skewness = skw, kurtosis = krt, hjust = .35) +
+p2 = moment2param(distname = 'GH', skewness = skw, kurtosis = krt) |> autoplot(hjust = .35) +
   xlim(-2, 2.5) + labs(y = latex2exp::TeX('Tukey\'s $g$-&-$h$'))
 p1 + p2
 ```
@@ -250,7 +251,7 @@ p1 + p2
 #| fig-width: 5
 #| code-fold: true
 #| code-summary: '[R] Gamma'
-moment2param(distname = 'gamma', skewness = skw, kurtosis = 3, hjust = .4) +
+moment2param(distname = 'gamma', skewness = skw, kurtosis = 3) |> autoplot(hjust = .4) +
   xlim(0, 4) + labs(y = latex2exp::TeX('$gamma$'))
 ```
 
