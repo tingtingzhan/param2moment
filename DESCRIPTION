@@ -16,7 +16,8 @@ Authors@R: c(person(given = "Tingting", family = "Zhan", role =
 Language: en-US
 Roxygen: list(markdown = TRUE)
 Depends: R (>= 4.5.0)
-Imports: methods, ggplot2, geomtextpath (== 0.2.0)
-Suggests: latex2exp, sn, TukeyGH77, knitr, quarto, rmarkdown
-RoxygenNote: 7.3.2
+Imports: methods, ggplot2 (== 4.0.2), geomtextpath (== 0.2.0)
+Suggests: latex2exp, sn, TukeyGH77, 
+    knitr, quarto, rmarkdown
+RoxygenNote: 7.3.3
 VignetteBuilder: quarto
